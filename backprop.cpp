@@ -72,29 +72,48 @@ void show_network (vector<vector<Neuron>> &net) {
     }
 }
 
+void dense(int layer_num, vector<vector<Neuron>> *net) {
+
+    int back_layer_num = net->back().size();
+    vector<Neuron*> back_layer = {};
+    for (int i = 0; i < back_layer_num; ++i)
+        back_layer.push_back(& net->back()[i]);
+    
+    vector<Neuron*> this_layer = {};
+    net->push_back(vector<Neuron>(layer_num, Neuron {}));
+    for (int i = 0; i < layer_num; ++i) {
+        net->back()[i].value = 0;
+        net->back()[i].backs = back_layer;
+        net->back()[i].weights = vector<double>(back_layer_num, r());
+
+        this_layer.push_back(& net->back()[i]);
+    }
+
+    for (int i = 0; i < back_layer_num; ++i)
+        (*prev(net->end(), 2))[i].nexts = this_layer;
+}
+
 double calculate_value(Neuron& n) {
+    auto check_all_has_value = [](Neuron& ne) {
+        for (auto e : ne.backs)
+            if (e->value == 0) return false;
+        return true;
+    };
+    
     if (n.backs.size() != 0) {
         vector<double> values;
         for (auto e : n.backs) {
-            calculate_value(*e);
+            // Don't calculate already calculated value.
+            if (e->value == 0) calculate_value(*e);
             values.push_back(e->value);
         }
+
         auto tmp = inner_product(values.begin(), values.end(), n.weights.begin(), 0.0f);
         n.value = tmp;
         return tmp;
     } else {
         return n.value;
     }
-
-    
-    // stack<vector<Neuron*>> sta;
-    // sta.push(n.backs);
-
-    // Neuron& last = n;
-    // while (!sta.empty()) {
-    //     auto e = sta.top(); sta.top();
-    //     e = inner_product(e.begin(), e.end(), last.weights.begin(), 0.0f);
-    // }
 }
 
 int main() {
@@ -119,89 +138,15 @@ int main() {
                 {},
                 {}
             }
-        },
-
-        {
-            {
-                0,
-                {},
-                {},
-                {r(), r()}
-            },
-            {
-                0,
-                {},
-                {},
-                {r(), r()}
-            },
-            {
-                0,
-                {},
-                {},
-                {r(), r()}
-            }
-        },
-
-        {
-            {
-                0,
-                {},
-                {},
-                {r(), r(), r()}
-            },
-            {
-                0,
-                {},
-                {},
-                {r(), r(), r()}
-            },
-            {
-                0,
-                {},
-                {},
-                {r(), r(), r()}
-            }
-        },
-
-        {
-            {
-                0,
-                {},
-                {},
-                {r(), r(), r()}
-            },
-            {
-                0,
-                {},
-                {},
-                {r(), r(), r()}
-            }
-        },
+        }
     };
 
-    network[0][0].nexts = {&network[1][0], &network[1][1], &network[1][2]};
-    network[0][1].nexts = {&network[1][0], &network[1][1], &network[1][2]};
-
-    network[1][0].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[1][0].backs = {&network[0][0], &network[0][1]};
-    network[1][1].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[1][1].backs = {&network[0][0], &network[0][1]};
-    network[1][2].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[1][2].backs = {&network[0][0], &network[0][1]};
-
-    network[2][0].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[2][0].backs = {&network[1][0], &network[1][1], &network[1][2]};
-    network[2][1].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[2][1].backs = {&network[1][0], &network[1][1], &network[1][2]};
-    network[2][2].nexts = {&network[2][0], &network[2][1], &network[2][2]};
-    network[2][2].backs = {&network[1][0], &network[1][1], &network[1][2]};
-
-    network[3][0].nexts = {};
-    network[3][0].backs = {&network[2][0], &network[2][1], &network[2][2]};
-    network[3][1].nexts = {};
-    network[3][1].backs = {&network[2][0], &network[2][1], &network[2][2]};
+    dense(3, &network);
+    dense(3, &network);
+    dense(2, &network);
 
     cout << calculate_value(network[3][0])  << endl;
+    cout << calculate_value(network[3][1])  << endl;
 
     show_network(network);
              
