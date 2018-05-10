@@ -62,12 +62,14 @@ string show(Neuron &n) {
     return ss.str();
 }
 
-void show_network () {
+void show_network (vector<vector<Neuron>> &net) {
     // Don't show the connection because this is a dense neural network.
-    cout << show(i1) << ' ' << show(i2) << endl;
-    cout << show(h11) << ' ' << show(h12) << ' ' << show(h13) << endl;
-    cout << show(h21) << ' ' << show(h22) << ' ' << show(h23) << endl;
-    cout << show(v1) << ' ' << show(v2) << endl;
+    for (auto layer : net) {
+        for (auto u : layer) {
+            cout << show(u) << " ";
+        }
+        cout << endl;
+    }
 }
 
 double calculate_value(Neuron& n) {
@@ -103,79 +105,105 @@ int main() {
      h13 h23 v3
 */
 
-    i1 = {
-        r(),
-        {},
-        {&h11, &h12, &h13},
-        {}
+    vector<vector<Neuron>> network = {
+        {
+            {
+                r(),
+                {},
+                {},
+                {}
+            },
+            {
+                r(),
+                {},
+                {},
+                {}
+            }
+        },
+
+        {
+            {
+                0,
+                {},
+                {},
+                {r(), r()}
+            },
+            {
+                0,
+                {},
+                {},
+                {r(), r()}
+            },
+            {
+                0,
+                {},
+                {},
+                {r(), r()}
+            }
+        },
+
+        {
+            {
+                0,
+                {},
+                {},
+                {r(), r(), r()}
+            },
+            {
+                0,
+                {},
+                {},
+                {r(), r(), r()}
+            },
+            {
+                0,
+                {},
+                {},
+                {r(), r(), r()}
+            }
+        },
+
+        {
+            {
+                0,
+                {},
+                {},
+                {r(), r(), r()}
+            },
+            {
+                0,
+                {},
+                {},
+                {r(), r(), r()}
+            }
+        },
     };
 
-    i2 = {
-        r(),
-        {},
-        {&h11, &h12, &h13},
-        {}
-    };
+    network[0][0].nexts = {&network[1][0], &network[1][1], &network[1][2]};
+    network[0][1].nexts = {&network[1][0], &network[1][1], &network[1][2]};
 
-    h11 = {
-        0,
-        {&i1, &i2},
-        {&h21, &h22, &h23},
-        {r(), r()}
-    };
+    network[1][0].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[1][0].backs = {&network[0][0], &network[0][1]};
+    network[1][1].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[1][1].backs = {&network[0][0], &network[0][1]};
+    network[1][2].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[1][2].backs = {&network[0][0], &network[0][1]};
 
-    h12 = {
-        0,
-        {&i1, &i2},
-        {&h21, &h22, &h23},
-        {r(), r()}
-    };
+    network[2][0].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[2][0].backs = {&network[1][0], &network[1][1], &network[1][2]};
+    network[2][1].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[2][1].backs = {&network[1][0], &network[1][1], &network[1][2]};
+    network[2][2].nexts = {&network[2][0], &network[2][1], &network[2][2]};
+    network[2][2].backs = {&network[1][0], &network[1][1], &network[1][2]};
 
-    h13 = {
-        0,
-        {&i1, &i2},
-        {&h21, &h22, &h23},
-        {r(), r()}
-    };
+    network[3][0].nexts = {};
+    network[3][0].backs = {&network[2][0], &network[2][1], &network[2][2]};
+    network[3][1].nexts = {};
+    network[3][1].backs = {&network[2][0], &network[2][1], &network[2][2]};
 
-    h21 = {
-        0,
-        {&h11, &h12, &h13},
-        {&v1, &v2},
-        {r(), r(), r()}
-    };
+    cout << calculate_value(network[3][0])  << endl;
 
-    h22 = {
-        0,
-        {&h11, &h12, &h13},
-        {&v1, &v2},
-        {r(), r(), r()}
-    };
-
-    h23 = {
-        0,
-        {&h11, &h12, &h13},
-        {&v1, &v2},
-        {r(), r(), r()}
-    };
-
-    v1 = {
-        0,
-        {&h21, &h22, &h23},
-        {},
-        {r(), r(), r()}
-    };
-
-    v2 = {
-        0,
-        {&h21, &h22, &h23},
-        {},
-        {r(), r(), r()}
-    };
-
-    cout << calculate_value(v1)  << endl;
-
-    show_network();
+    show_network(network);
              
     return 0;
 }
