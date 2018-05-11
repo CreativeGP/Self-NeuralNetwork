@@ -116,6 +116,27 @@ double calculate_value(Neuron& n) {
     }
 }
 
+void update_network(vector<vector<Neuron>>& net) {
+    for (auto &e : net.back())
+        calculate_value(e);
+}
+
+double error(vector<vector<Neuron>>& net, vector<double> teacher) {
+    // Update the network
+    update_network(net);
+
+    double sum = 0;
+    // E(y1,...,yK) = ∑Kk(tk−yk)2/2
+    for (int k = 0;
+         k < net.back().size();
+         ++k)
+    {
+        sum += pow((teacher[k] - net.back()[k].value), 2) / 2;
+    }
+
+    return sum;
+}
+
 int main() {
 /*
   make network (dence)
@@ -145,9 +166,8 @@ int main() {
     dense(3, &network);
     dense(2, &network);
 
-    cout << calculate_value(network[3][0])  << endl;
-    cout << calculate_value(network[3][1])  << endl;
 
+    cout << error(network, {1, 1}) << endl;
     show_network(network);
              
     return 0;
