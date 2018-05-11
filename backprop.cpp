@@ -99,12 +99,6 @@ void dense(int layer_num, vector<vector<Neuron>> *net) {
 }
 
 double calculate_value(Neuron& n) {
-    auto check_all_has_value = [](Neuron& ne) {
-        for (auto e : ne.backs)
-            if (e->value == 0) return false;
-        return true;
-    };
-    
     if (n.backs.size() != 0) {
         vector<double> values;
         for (auto e : n.backs) {
