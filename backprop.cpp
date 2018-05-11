@@ -108,6 +108,7 @@ double calculate_value(Neuron& n) {
         }
 
         auto tmp = inner_product(values.begin(), values.end(), n.weights.begin(), 0.0f);
+        tmp = s(tmp);
         n.value = tmp;
         return tmp;
     } else {
