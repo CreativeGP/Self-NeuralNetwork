@@ -44,6 +44,11 @@ double r()
     return (double)rnd() / numeric_limits<uint32_t>::max();
 }
 
+double s(double x)
+{
+    return 1.0 / (1.0 + exp(-x));
+}
+
 
 struct Neuron {
     double value;
