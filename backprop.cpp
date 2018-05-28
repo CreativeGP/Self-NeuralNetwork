@@ -27,6 +27,8 @@
 #include <random>
 #include <limits>
 
+#include <unistd.h>
+
 #define ll long
 #define ull unsigned long long
 
@@ -89,7 +91,9 @@ void dense(int layer_num, vector<vector<Neuron>> *net) {
     for (int i = 0; i < layer_num; ++i) {
         net->back()[i].value = 0;
         net->back()[i].backs = back_layer;
-        net->back()[i].weights = vector<double>(back_layer_num, r());
+        // This is not random!!!
+        rep(j, back_layer_num)
+            net->back()[i].weights.push_back(r());
 
         this_layer.push_back(& net->back()[i]);
     }
@@ -137,6 +141,24 @@ double error(vector<vector<Neuron>>& net, vector<double> teacher) {
     return sum;
 }
 
+double object(vector<vector<Neuron>>& net, vector<double> teacher) {
+    // Update the network
+    update_network(net);
+
+    double sum = 0;
+    // E(y1,...,yK) = ∑Kk(tk−yk)2/2
+    for (int k = 0;
+         k < net.back().size();
+         ++k)
+    {
+        sum += pow((teacher[k] - net.back()[k].value), 2) / 2;
+    }
+
+    return sum;
+}
+
+
+
 int main() {
 /*
   make network (dence)
@@ -162,6 +184,8 @@ int main() {
         }
     };
 
+    vector<double> teacher = {0.3, 0.8};
+
     dense(3, &network);
     dense(3, &network);
     dense(2, &network);
@@ -169,6 +193,13 @@ int main() {
 
     cout << error(network, {1, 1}) << endl;
     show_network(network);
+
+    return 0;
+
+    while (true) {
+        sleep(1);
+        cout << object(network, teacher) << endl;
+    }
              
     return 0;
 }
