@@ -141,21 +141,7 @@ double error(vector<vector<Neuron>>& net, vector<double> teacher) {
     return sum;
 }
 
-double object(vector<vector<Neuron>>& net, vector<double> teacher) {
-    // Update the network
-    update_network(net);
-
-    double sum = 0;
-    // E(y1,...,yK) = ∑Kk(tk−yk)2/2
-    for (int k = 0;
-         k < net.back().size();
-         ++k)
-    {
-        sum += pow((teacher[k] - net.back()[k].value), 2) / 2;
-    }
-
-    return sum;
-}
+#define object error
 
 
 
