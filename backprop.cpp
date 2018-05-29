@@ -51,9 +51,14 @@ double s(double x)
     return 1.0 / (1.0 + exp(-x));
 }
 
+double d_s(double x)
+{
+    return s(x) * (1 - s(x));
+}
+
 
 struct Neuron {
-    double value;
+    double value, in;
     vector<Neuron*> backs;
     vector<Neuron*> nexts;
     vector<double> weights;
@@ -112,6 +117,7 @@ double calculate_value(Neuron& n) {
         }
 
         auto tmp = inner_product(values.begin(), values.end(), n.weights.begin(), 0.0f);
+        n.in = tmp; // This isn't applied by sigmoid function
         tmp = s(tmp);
         n.value = tmp;
         return tmp;
@@ -143,7 +149,14 @@ double error(vector<vector<Neuron>>& net, vector<double> teacher) {
 
 #define object error
 
-
+void fit(vector<vector<Neuron>>& net, vector<double> teacher) {
+    for (int i = net.size()-1; i > 0; --i) {
+        net[i].
+    }
+    for (auto layer : net) {
+        
+    }
+}
 
 int main() {
 /*
@@ -172,7 +185,7 @@ int main() {
 
     vector<double> teacher = {0.3, 0.8};
 
-    dense(3, &network);
+//    dense(3, &network);
     dense(3, &network);
     dense(2, &network);
 
