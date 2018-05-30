@@ -64,8 +64,6 @@ struct Neuron {
     vector<double> weights;
 };
 
-Neuron i1, i2, h11, h12, h13, h21, h22, h23, v1, v2, v3;
-
 string show(Neuron &n) {
     stringstream ss;
     ss << n.value << "[";
@@ -84,12 +82,23 @@ void show_network (vector<vector<Neuron>> &net) {
     }
 }
 
-void set_input(vector<vector<Neuron>> &net, vector<double> inputs) {
-    if (net[0].size() != inputs.size()) return;
+void set_input(vector<double> inputs, vector<vector<Neuron>> *net) {
+    if ((*net)[0].size() != inputs.size()) return;
 
     for (int i = 0; i < inputs.size(); ++i) {
-        net[0][i].in = net[0][i].value = inputs[i];
+        (*net)[0][i].in = (*net)[0][i].value = inputs[i];
     }
+}
+
+void input(int layer_num, vector<vector<Neuron>> *net) {
+    rep (i, layer_num)
+        (*net)[0].push_back({
+                r(), 
+                {},
+                {},
+                {}
+            });
+
 }
 
 void dense(int layer_num, vector<vector<Neuron>> *net) {
@@ -178,6 +187,7 @@ void fit(vector<vector<Neuron>>& net, vector<double> teacher) {
             
             double in_by_weights;
             for (int k = 0; k < net[i][j].weights.size(); ++k) {
+//                cout << "Layer " << i << ", Neuron " << j << ", Weight " << k << endl;
                 in_by_weights = net[i-1][k].value;
                 net[i][j].weights[k] -= LEARNING_RATE * error_by_out * out_by_in * in_by_weights;
             }
@@ -196,46 +206,44 @@ int main() {
 
     vector<vector<Neuron>> network = {
         {
-            {
-                r(),
-                {},
-                {},
-                {}
-            },
-            {
-                r(),
-                {},
-                {},
-                {}
-            }
         }
     };
 
+    vector<double> inputs = {0, 0, 1, 1};
+    vector<double> teacher = {1, 1, 0, 0};
+
+    input(inputs.size(), &network);
+    set_input(inputs, &network);
 
     dense(4, &network);
     dense(4, &network);
 
-    vector<double> teacher = {0.3, 0.8};
+    dense(teacher.size(), &network);
+    
 //    set_input(network, {0.1, 0.9});
 
-    cout << "inputs: " << endl;
-    double gtmp; cin >> gtmp;
-    cout << "Network input {" << gtmp <<"}: " << endl;
-    rep(i, gtmp) {
-        double tmp; cin >> tmp;
-        network[0][i].value = tmp;
-    }
+    // cout << "inputs: " << endl;
+    // double gtmp; cin >> gtmp;
+    // cout << "Network input {" << gtmp <<"}: " << endl;
+    // input(gtmp, &network);
+    // rep(i, gtmp) {
+    //     double tmp; cin >> tmp;
+    //     network[0][i].value = tmp;
+    // }
 
+    // dense(4, &network);
+    // dense(4, &network);
 
-    cout << "outputs: " << endl;
-    cin >> gtmp;
-    cout << "Want to be {" << gtmp << "}: " << endl;
-    rep(i, gtmp) {
-        double tmp; cin >> tmp;
-        teacher[i] = tmp;
-    }
+    // cout << "outputs: " << endl;
+    // cin >> gtmp;
+    // cout << "Want to be {" << gtmp << "}: " << endl;
+    // rep(i, gtmp) {
+    //     double tmp; cin >> tmp;
+    //     teacher.push_back(tmp);
+    // }
 
-    dense(gtmp, &network);
+    // dense(gtmp, &network);
+
 
     cout << error(network, {1, 1}) << endl;
     show_network(network);
@@ -255,7 +263,7 @@ int main() {
 //        usleep(1000000 * 0.5);
     }
 
-    update_network(network, true);
+    update_network(network);
     show_network(network);
              
     return 0;
