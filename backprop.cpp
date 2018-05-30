@@ -149,12 +149,35 @@ double error(vector<vector<Neuron>>& net, vector<double> teacher) {
 
 #define object error
 
+double LEARNING_RATE = 1;
+
 void fit(vector<vector<Neuron>>& net, vector<double> teacher) {
+    vector<double> last_error_by_in;
     for (int i = net.size()-1; i > 0; --i) {
-        net[i].
-    }
-    for (auto layer : net) {
-        
+        for (int j = 0; j < net[i].size(); ++j) {
+            double error_by_out;
+            if (i == net.size()-1)
+                error_by_out = net[i][j].value - teacher[j];
+            
+            double out_by_in = d_s(net[i][j].in);
+            if (last_error_by_in.size() > 0) last_error_by_in.clear();
+            last_error_by_in.push_back(error_by_out * out_by_in);
+            
+            double in_by_weights;
+            for (int k = 0; k < net[i][j].weights.size(); ++k) {
+                if (i != net.size()-1) {
+                    error_by_out = 0;
+                    for (int l = 0; l < net[i+1].size(); ++l) {
+//                        cout << last_error_by_in[l]*net[i+1][l].weights[j] << endl;;
+                        error_by_out += last_error_by_in[l] * net[i+1][l].weights[j];
+//                        cout << i << " " << j << " " << k  << " " << l << endl;
+                    }
+                }
+                in_by_weights = net[i-1][k].value;
+                net[i][j].weights[k] -= LEARNING_RATE * error_by_out * out_by_in * in_by_weights;
+            }
+        }
+//        break;
     }
 }
 
@@ -185,7 +208,7 @@ int main() {
 
     vector<double> teacher = {0.3, 0.8};
 
-//    dense(3, &network);
+    dense(3, &network);
     dense(3, &network);
     dense(2, &network);
 
@@ -193,11 +216,19 @@ int main() {
     cout << error(network, {1, 1}) << endl;
     show_network(network);
 
-    return 0;
 
-    while (true) {
-        sleep(1);
-        cout << object(network, teacher) << endl;
+    while (error(network, teacher) > 0.0001) {
+        if (error(network, teacher) < 0.01) LEARNING_RATE = 0.3;
+        if (error(network, teacher) < 0.001) LEARNING_RATE = 0.01;
+//        LEARNING_RATE = ;
+        
+        fit(network, teacher);
+        update_network(network);
+        show_network(network);
+
+        cout << endl;
+        cout << "Error: " << error(network, teacher) << endl;
+//        usleep(1000000 * 0.5);
     }
              
     return 0;
