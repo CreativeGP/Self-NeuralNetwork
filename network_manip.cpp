@@ -14,14 +14,20 @@ string show (Neuron &n) {
     return ss.str();
 }
 
-void show_network (NeuralNet &net, bool value_only=true) {
+void show_network (NeuralNet &net, int type=0) {
     // Don't show the connection because this is a dense neural network.
     for (auto layer : net) {
         for (auto u : layer) {
-            if (value_only) {
-                cout << u.value << " ";
-            } else {
-                cout << show(u) << " ";
+            switch (type) {
+                case 0:
+                    cout << show(u) << " ";
+                    break;
+                case 1:
+                    cout << u.value << " ";
+                    break;
+                case 2:
+                    v__print(u.weights);
+                    break;
             }
         }
         cout << endl;

@@ -24,8 +24,10 @@ double error(NeuralNet &net, vector<double> teacher) {
 
 #define object error
 
-double LEARNING_RATE = 30;
-double LEARNING_BIAS_RATE = 20;
+// double LEARNING_RATE = 30;
+// double LEARNING_BIAS_RATE = 20;
+double LEARNING_RATE = 0.1;
+double LEARNING_BIAS_RATE = 0.1;
 double OBJECT_ACC = 0.000001;
 
 void fit_once(NeuralNet& net, vector<double> teacher) {

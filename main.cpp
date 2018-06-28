@@ -61,7 +61,7 @@ random_device rnd;
 
 double r()
 {
-    return (double)rnd() / numeric_limits<uint32_t>::max();
+    return (double)rnd() / random_device::max();
 }
 
 double s(double x)
@@ -106,7 +106,8 @@ int main() {
     };
 
     for (auto e : xor_nets) {
-        show_network(e, false);
+        cout << "XOR:" <<endl;
+        show_network(e, 1);
     }
 
     // zero_network(&xor_nets[3]);
@@ -114,7 +115,7 @@ int main() {
 
 
     NeuralNet xor_model = get_model(xor_nets);
-    show_network(xor_model, false);
+    show_network(xor_model, 1);
 //    cout << 'a' << endl;
 //    show_network(xor_model, false);
 
@@ -133,7 +134,7 @@ int main() {
     // update_network(&xor_model);
     // show_network(xor_model);
 
-    set_input({1, 1}, &xor_model);
+    set_input({0 , 0}, &xor_model);
     zero_network(&xor_model);
     update_network(&xor_model);
     show_network(xor_model);

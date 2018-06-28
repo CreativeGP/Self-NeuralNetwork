@@ -81,7 +81,7 @@ NeuralNet get_model(vector<NeuralNet>& nets) {
 NeuralNet get_trained_network(
     vector<double> inputs,
     vector<double> teacher,
-    int layers=2, int denses=4)
+    int layers=1, int denses=8)
 {
     NeuralNet network = {
         {
@@ -96,7 +96,7 @@ NeuralNet get_trained_network(
 
     dense(teacher.size(), &network);
 
-    show_network(network);
+//    show_network(network);
 
     fit(network, teacher, false);
 
